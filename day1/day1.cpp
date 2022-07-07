@@ -1,30 +1,30 @@
 #include <iostream>
 #include <string>
 
-using namespace std;
+enum Type { electric=0, petrol, diesel, manpowered }; //Types of class Vehicle.
+enum BikeType { motorbike, scooter, moped}; //Types of class Bike.
+enum CarType { suv, sedan, hatchback }; //Types of class Car.
 
+const std::string VEHICLES[] = { "electric", "petrol", "diesel", "manpowered" }; //Array that hold the strings of class Vehicle
 
-enum Type { electric,petrol,diesel,manpowered };    //vehicle types
-enum BikeType { motorbike,scooter,moped};   //types of bikes
-enum CarType { suv,sedan,hatchback };   //types of cars
-
-class Vehicle{      //vehicle class
+class Vehicle{
     public:
         Type vehicleType;
-        string brand;
-        string model;
-        string colour;
+        std::string brand;
+        std::string model;
+        std::string colour;
         float mileage;
         int price;
 
 
-        Vehicle(Type vehicleType,string brand,string model,string colour,float mileage,int price){  //constructor
-            this->vehicleType=vehicleType;
-            this->brand=brand;
-            this->model=model;
-            this->colour=colour;
-            this->mileage=mileage;
-            this->price=price;
+        Vehicle(Type vehicleType, std::string brand, std::string model, std::string colour, float mileage, int price)
+        {
+            this->vehicleType = vehicleType;
+            this->brand = brand;
+            this->model = model;
+            this->colour = colour;
+            this->mileage = mileage;
+            this->price = price;
         }
 
         virtual int getNumOfWheels() = 0 ;
@@ -34,91 +34,99 @@ class Vehicle{      //vehicle class
 
 };
 
+//Inherits from Vehicle.
 class Bike : public Vehicle{
     public:
         BikeType bikeType;
         float weight;
 
-        //call parentclass constructor
-        Bike(Type vehicleType,BikeType biketype,string brand,string model,string colour,float mileage,int price,float weight) : Vehicle(vehicleType,brand,model,colour,mileage,price) {
-            //initialise the weight and biketype
-            this->weight=weight;
-            this->bikeType=bikeType;
+        Bike( Type vehicleType, BikeType biketype, std::string brand, std::string model, std::string colour, float mileage, int price, float weight)
+            : Vehicle( vehicleType, brand, model, colour, mileage, price )
+        {
+            this->weight = weight;
+            this->bikeType = bikeType;
         }
 
-        //implementation of virtual method
-        int getNumOfWheels(){
+        int getNumOfWheels()
+        {
             return 2;
         }
 
-        void operator << (const Vehicle& b){
-            cout<<"BRAND : "<<brand<<"\nMODEL : "<<model<<"\nVEHICLETYPE : "<<vehicleType<<"\nCOLOUR : "<<colour<<"\nPRICE : "<<price<<"\n\n";
+        void operator << (const Vehicle& b)
+        {
+            std::cout <<"BRAND : "<<brand<<"\nMODEL : "<<model<<"\nVEHICLETYPE : "<<vehicleType<<"\nCOLOUR : "<<colour<<"\nPRICE : "<<price<<"\n\n";
         }
 
-        bool operator < (const Vehicle& b){
-            return (price<b.price);
+        bool operator < (const Vehicle& b)
+        {
+            return price < b.price;
         }
 
         
-        bool operator > (const Vehicle& b){            
-            return (price>b.price);
+        bool operator > (const Vehicle& b)
+        {            
+            return price > b.price;
         }
 };
 
-
+//Inherits from Vehicle.
 class Car : public Vehicle{
     public:
         CarType carType;
         int numPersons;
         
-        //call parentcalss constructor
-        Car(Type vehicleType,CarType carType,string brand,string model,string colour,float mileage,int price,int numPersons) : Vehicle(vehicleType,brand,model,colour,mileage,price) {
-            //initialise the numPersons and carType
-            this->numPersons=numPersons;
-            this->carType=carType;
+        Car( Type vehicleType, CarType carType, std::string brand, std::string model, std::string colour, float mileage, int price, int numPersons )
+            : Vehicle( vehicleType, brand, model, colour, mileage, price )
+        {
+            this->numPersons = numPersons;
+            this->carType = carType;
         }
 
-        //implementation of virtual method
-        int getNumOfWheels(){
+        int getNumOfWheels()
+        {
             return 4;
         }
 
-        void operator << (const Vehicle& c){
-            cout<<"BRAND : "<<brand<<"\nMODEL : "<<model<<"\nVEHICLETYPE : "<<vehicleType<<"\nCOLOUR : "<<colour<<"\nPRICE : "<<price<<"\n\n";
+        void operator << (const Vehicle& c)
+        {
+            std::cout <<"BRAND : "<<brand<<"\nMODEL : "<<model<<"\nVEHICLETYPE : "<<VEHICLES[vehicleType]<<"\nCOLOUR : "<<colour<<"\nPRICE : "<<price<<"\n\n";
         }
 
-        bool operator < (const Vehicle& c){
-            return (price<c.price);
+        bool operator < (const Vehicle& c)
+        {
+            return price < c.price;
         }
 
         
-        bool operator > (const Vehicle& c){
-            return (price>c.price);
+        bool operator > (const Vehicle& c)
+        {
+            return price > c.price;
         }
 
 };
 
 
-int main(){
-    //create some objects
-    Bike tvsScooty(petrol,scooter,"tvs","scooty","red",20.2,9,45);
-    Car fordMustang(diesel,suv,"ford","mustang","blue",13.1,999,4);
-    Bike heroHonda(petrol,motorbike,"hero","splendor","black",60,86,78.4);
+int main()
+{
+    //Create some objects.
+    Bike tvsScooty ( petrol, scooter, "tvs", "scooty", "red", 20.2, 9, 45 );
+    Car fordMustang ( diesel, suv, "ford", "mustang", "blue", 13.1, 999, 4 );
+    Bike heroHonda ( petrol, motorbike, "hero", "splendor", "black", 60, 86, 78.4 );
 
-    //print number of wheels
+    //call getNumOfWheels function.
     tvsScooty.getNumOfWheels();
     fordMustang.getNumOfWheels();
     heroHonda.getNumOfWheels();
 
-    //overloaded <<
-    tvsScooty<<tvsScooty;
-    fordMustang<<fordMustang;
-    heroHonda<<heroHonda;
+    //Operator overloading for << operator.
+    tvsScooty << tvsScooty;
+    fordMustang << fordMustang;
+    heroHonda << heroHonda;
 
-    //overloaded < and >
-    cout<< ( (heroHonda<fordMustang)? "FORD MUSTANG IS COSTLIER THAN HERO HONDA" : "FORD MUSTANG IS CHEAPER THAN HERO HONDA" ) << "\n";
-    cout<< ( (tvsScooty<heroHonda)? "HERO HONDA IS COSTLIER THAN TVS SCOOTY" : "HERO HONDA IS CHEAPER THAN TVS SCOOTY" ) << "\n";
-    cout<< ( (tvsScooty<fordMustang)? "FORD MUSTANG IS COSTLIER THAN TVS SCOOTY" : "FORD MUSTANG IS CHEAPER THAN TVS SCOOTY" ) << "\n";
+    //Operator overloading for < and > operator
+    std::cout << ( ( heroHonda < fordMustang )? "FORD MUSTANG IS COSTLIER THAN HERO HONDA" : "FORD MUSTANG IS CHEAPER THAN HERO HONDA" ) << "\n";
+    std::cout << ( ( tvsScooty < heroHonda )? "HERO HONDA IS COSTLIER THAN TVS SCOOTY" : "HERO HONDA IS CHEAPER THAN TVS SCOOTY" ) << "\n";
+    std::cout << ( ( tvsScooty > fordMustang )? "FORD MUSTANG IS CHEAPER THAN TVS SCOOTY" : "FORD MUSTANG IS COSTLIER THAN TVS SCOOTY" ) << "\n";
 
     return 0;
 }
