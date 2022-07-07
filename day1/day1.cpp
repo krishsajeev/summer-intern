@@ -8,7 +8,7 @@ enum CarType { suv, sedan, hatchback }; //Types of class Car.
 const std::string VEHICLES[] = { "electric", "petrol", "diesel", "manpowered" }; //Array that hold the strings of class Vehicle
 
 class Vehicle{
-    public:
+    private:
         Type vehicleType;
         std::string brand;
         std::string model;
@@ -16,7 +16,7 @@ class Vehicle{
         float mileage;
         int price;
 
-
+    public:
         Vehicle(Type vehicleType, std::string brand, std::string model, std::string colour, float mileage, int price)
         {
             this->vehicleType = vehicleType;
@@ -32,14 +32,38 @@ class Vehicle{
         virtual bool operator < (const Vehicle& v) = 0;
         virtual bool operator > (const Vehicle& v) = 0;
 
+        //getter methods
+        Type type() const
+        {
+            return this->vehicleType;
+        }
+        std::string vehicleBrand() const
+        {
+            return this->brand;
+        }
+        std::string vehicleModel() const
+        {
+            return this->model;
+        }
+        std::string vehicleColour() const
+        {
+            return this->colour;
+        }
+        int vehiclePrice() const
+        {
+            return this->price;
+        }
+
+
 };
 
 //Inherits from Vehicle.
 class Bike : public Vehicle{
-    public:
+    private:    
         BikeType bikeType;
         float weight;
 
+    public:
         Bike( Type vehicleType, BikeType biketype, std::string brand, std::string model, std::string colour, float mileage, int price, float weight)
             : Vehicle( vehicleType, brand, model, colour, mileage, price )
         {
@@ -52,29 +76,30 @@ class Bike : public Vehicle{
             return 2;
         }
 
-        void operator << (const Vehicle& b)
+        void operator << (const Vehicle& vehicle)
         {
-            std::cout <<"BRAND : "<<brand<<"\nMODEL : "<<model<<"\nVEHICLETYPE : "<<vehicleType<<"\nCOLOUR : "<<colour<<"\nPRICE : "<<price<<"\n\n";
+            std::cout <<"BRAND : "<<vehicle.vehicleBrand()<<"\nMODEL : "<<vehicle.vehicleModel()<<"\nVEHICLETYPE : "<<vehicle.type()<<"\nCOLOUR : "<<vehicle.vehicleColour()<<"\nPRICE : "<<vehicle.vehiclePrice()<<"\n\n";
         }
 
-        bool operator < (const Vehicle& b)
+        bool operator < (const Vehicle& vehicle)
         {
-            return price < b.price;
+            return vehiclePrice() < vehicle.vehiclePrice();
         }
 
         
-        bool operator > (const Vehicle& b)
+        bool operator > (const Vehicle& vehicle)
         {            
-            return price > b.price;
+            return vehiclePrice() > vehicle.vehiclePrice();
         }
 };
 
 //Inherits from Vehicle.
 class Car : public Vehicle{
-    public:
+    private:    
         CarType carType;
         int numPersons;
-        
+
+    public:        
         Car( Type vehicleType, CarType carType, std::string brand, std::string model, std::string colour, float mileage, int price, int numPersons )
             : Vehicle( vehicleType, brand, model, colour, mileage, price )
         {
@@ -87,20 +112,20 @@ class Car : public Vehicle{
             return 4;
         }
 
-        void operator << (const Vehicle& c)
+        void operator << (const Vehicle& vehicle)
         {
-            std::cout <<"BRAND : "<<brand<<"\nMODEL : "<<model<<"\nVEHICLETYPE : "<<VEHICLES[vehicleType]<<"\nCOLOUR : "<<colour<<"\nPRICE : "<<price<<"\n\n";
+            std::cout <<"BRAND : "<<vehicle.vehicleBrand()<<"\nMODEL : "<<vehicle.vehicleModel()<<"\nVEHICLETYPE : "<<vehicle.type()<<"\nCOLOUR : "<<vehicle.vehicleColour()<<"\nPRICE : "<<vehicle.vehiclePrice()<<"\n\n";
         }
 
-        bool operator < (const Vehicle& c)
+        bool operator < (const Vehicle& vehicle)
         {
-            return price < c.price;
+            return vehiclePrice() < vehicle.vehiclePrice();
         }
 
         
-        bool operator > (const Vehicle& c)
+        bool operator > (const Vehicle& vehicle)
         {
-            return price > c.price;
+            return vehiclePrice() < vehicle.vehiclePrice();
         }
 
 };
