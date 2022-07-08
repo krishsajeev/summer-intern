@@ -69,6 +69,10 @@ class Bank{
         {
             return this->name;
         }
+        std::string getBranch()
+        {
+            return this->branchName;
+        }
 };
 
 class HDFC : public Bank,public Loan{
@@ -223,7 +227,7 @@ class Broker{
                     b = &bank;
                 }
             }
-            std::cout << (*b).getName() << " HAS THE LOWEST INTEREST";
+            std::cout << (*b).getName() << (*b).getBranch() << " HAS THE LOWEST INTEREST";
         }
 
         void printBankDetails(Bank bank)
@@ -232,71 +236,254 @@ class Broker{
             std::cout<<"\n";
         }
 
-        void printBankDetails(std::vector<Bank> banks)
+        void printBankDetails(std::vector<HDFC> banks)
         {
-            for(Bank bank : banks){
+            for(HDFC bank : banks){
                 bank.getInfo();   
                 std::cout<<"\n";
             }
         }
 
+        void printBankDetails(std::vector<ICICI> banks)
+        {
+            for(ICICI bank : banks){
+                bank.getInfo();   
+                std::cout<<"\n";
+            }
+        }        
+
+        void printBankDetails(std::vector<SBI> banks)
+        {
+            for(SBI bank : banks){
+                bank.getInfo();   
+                std::cout<<"\n";
+            }
+        }
 };
+void banner ()
+{
+    std::cout << "\n\n\nTHE AVAILABLE BANKS ARE\n" << "ICICI\nHDFC\nSBI\n" << std::endl;
+    std::cout << "0 --- CREATE BANKS\n1 --- SET LOANS\n2 --- GET AVAILABLE LOANS\n3 --- GET INTEREST RATE\n4 --- GET DOCUMENTS REQUIRED";
+    std::cout << "\n5 --- GET BANK DETAILS" << std::endl;
+    std::cout << "\n6 --- COMPARE BANKS\n\n\nKEY" << std::endl;
+    std::cout << "GOLD LOAN TYPES\n0 --- GOLDLOAN\n1 --- LANDLOAN\n2 --- PERSONALLOAN\n\n\n" << std::endl;
+    std::cout << "BANK TYPES\n0 --- PUBLICSECTOR\n1 --- PRIVATESECTOR\n\n\n" << std::endl;
+    std::cout << "COMPARISON\n1 --- TWO BANKS\n2 --- THREE BANKS\n3 --- ALL BANKS";
+}
+Type getBankType(int num)
+{
+    if(num==0) {
+        return publicSector;
+    }
+    else {
+        return privateSector;
+    }
+}
+LoanType getLoanType(int num)
+{
+    if(num==0) {
+        return goldLoan;
+    }
+    else if(num==1) {
+        return landLoan;
+    }
+    else {
+        return personalLoan;
+    }
+}
+
+std::vector<HDFC> hdfcbank;
+std::vector<ICICI> icicibank;
+std::vector<SBI> sbibank;
+std::vector<Bank> bankslist;
+
+Bank getBank(std::string name){
+    if(name=="HDFC"){
+        return hdfcbank.back();        
+    }
+    else if(name=="ICICI"){
+        return icicibank.back();
+    }
+    else{
+        return sbibank.back();
+    }
+}
 
 int main()
 {
     //Creating Bank objects.
-    HDFC hdfc1("7-08-91", publicSector, "perungudi");
-    hdfc1.setLoans(goldLoan, 19);
-    hdfc1.getAvailableLoans();
-    hdfc1.getInterestRate(goldLoan);
-    hdfc1.getDocumentsRequired(goldLoan);
-    std::cout << "\n";
-
+    HDFC hdfc1("7-08-91", publicSector, "perungudi");    
     ICICI icici1("8-09-97", publicSector, "urapakkam");
-    icici1.setLoans(landLoan, 9);
-    icici1.getAvailableLoans();
-    icici1.getInterestRate(landLoan);
-    icici1.getDocumentsRequired(landLoan);
-    std::cout << "\n";
-
     SBI sbi1("5-04-11", publicSector, "velachery");
-    sbi1.setLoans(personalLoan, 7);
-    sbi1.getAvailableLoans();
-    sbi1.getInterestRate(personalLoan);
-    sbi1.getDocumentsRequired(personalLoan);
-    std::cout << "\n";
-
-
     ICICI icici2("10-5-02", publicSector, "navalur");
-    icici2.setLoans(goldLoan, 9);
-    icici2.getAvailableLoans();
-    icici2.getInterestRate(goldLoan);
-    icici2.getDocumentsRequired(goldLoan);
-    std::cout << "\n";
-
     SBI sbi2("5-07-20", publicSector, "chennai");
-    sbi2.setLoans(goldLoan, 7);
-    sbi2.getAvailableLoans();
-    sbi2.getInterestRate(goldLoan);
-    sbi2.getDocumentsRequired(goldLoan);
-    std::cout << "\n";
 
-    //Creating vector with bank objects.
-    std::vector<Bank> banks;
-    banks.push_back(icici1);
-    banks.push_back(hdfc1);
-    banks.push_back(sbi1);
-
-    //calling Boker service.
+    
     Broker broker;
-    broker.compare(icici2, sbi2, hdfc1, goldLoan);
-    broker.compare(icici2, sbi2, goldLoan);
-    broker.compare(banks, goldLoan);
-    std::cout<<"\n";
 
-    //Printing bank details.
-    broker.printBankDetails(hdfc1);
-    std::cout<<"\n";
-    broker.printBankDetails(banks);
+
+    
+
+    while (1) {
+        banner();
+        std::cout<<"ENTER THE OPTION\n";
+        int option=0;
+        std::cin >> option;
+        switch (option) {
+        case 0:
+        {
+            std::string branch;
+            int type;
+            std::string date;
+            std::cout << "ENTER BRANCH, BANKTYPE, AND DATE\n";
+            std::cin >> branch;
+            std::cin >> type;
+            std::cin >> date;
+            std::cout << "ENTER THE BANK NAME\n";
+            std::string bankname;            
+            std::cin >> bankname;
+
+            if(bankname == "HDFC"){
+                HDFC hdfc(date, getBankType(type), branch);
+                hdfcbank.push_back(hdfc);
+                bankslist.push_back(hdfc);
+            }
+            else if(bankname == "ICICI"){
+                ICICI icici(date, getBankType(type), branch);
+                icicibank.push_back(icici);
+                bankslist.push_back(icici);
+            }
+            else if(bankname == "SBI"){
+                SBI sbi(date, getBankType(type), branch);
+                sbibank.push_back(sbi);
+                bankslist.push_back(sbi);
+            }
+
+            break;
+        }
+        case 1:
+        {
+            int interest;
+            int type;
+            std::string bankname;
+
+            std::cout << "ENTER THE BANK NAME\n";
+
+            std::cin >> bankname;
+            
+            std::cout << "ENTER THE INTEREST AND TYPE\n";
+            std::cin >> interest;
+            std::cin >> type;
+
+            if(bankname == "HDFC"){
+                hdfcbank.back().setLoans(getLoanType(type),interest);
+            }
+            else if(bankname == "ICICI"){
+                icicibank.back().setLoans(getLoanType(type),interest);
+            }
+            else if(bankname == "SBI"){
+                sbibank.back().setLoans(getLoanType(type),interest);
+            }
+
+            break;
+        }
+        case 2:
+        {            
+            std::string bankname;
+
+            std::cout << "ENTER THE BANK NAME\n";
+            std::cin >> bankname;
+
+            if(bankname == "HDFC"){
+                hdfcbank.back().getAvailableLoans();
+            }
+            else if(bankname == "ICICI"){
+                icicibank.back().getAvailableLoans();
+            }
+            else if(bankname == "SBI"){
+                sbibank.back().getAvailableLoans();
+            }
+        }
+        case 3:
+        {
+            std::string bankname;
+            int type;
+            std::cout << "ENTER THE BANK NAME\n";
+            std::cin >> bankname;
+
+            std::cout << "ENTER THE LOAN TYPE\n";
+            std::cin >> type;
+
+            if(bankname == "HDFC"){
+                hdfcbank.back().getInterestRate(getLoanType(type));
+            }
+            else if(bankname == "ICICI"){
+                icicibank.back().getInterestRate(getLoanType(type));
+            }
+            else if(bankname == "SBI"){
+                sbibank.back().getInterestRate(getLoanType(type));
+            }
+        }
+        case 4:
+        {
+            std::string bankname;
+            int type;
+            std::cout << "ENTER THE BANK NAME\n";
+            std::cin >> bankname;
+
+            std::cout << "ENTER THE LOAN TYPE\n";
+            std::cin >> type;
+
+            if(bankname == "HDFC"){
+                hdfcbank.back().getDocumentsRequired(getLoanType(type));
+            }
+            else if(bankname == "ICICI"){
+                icicibank.back().getDocumentsRequired(getLoanType(type));
+            }
+            else if(bankname == "SBI"){
+                sbibank.back().getDocumentsRequired(getLoanType(type));
+            }
+        }
+        case 5:
+        {
+            broker.printBankDetails(hdfcbank);
+            broker.printBankDetails(icicibank);
+            broker.printBankDetails(sbibank);
+        }
+        case 6:
+        {
+            std::cout << "ENTER THE COMPARISON MODE\n";
+            int mode=-1;
+            std::cin >> mode;
+            std::cout << "ENTER THE LOAN TYPE\n";
+            int type=-1;
+            std::cin >> type;
+            if(mode==0){
+                std::cout << "ENTER THE TWO BANKS\n";
+                std::string bank1;
+                std::string bank2;
+                std::cin >> bank1;
+                std::cin >> bank2;
+                broker.compare(getBank(bank1),getBank(bank2),getLoanType(type));
+            }
+            else if(mode==1){
+                std::cout << "ENTER THE THREE BANKS\n";
+
+                std::string bank1;
+                std::string bank2;
+                std::string bank3;
+
+                std::cin >> bank1;
+                std::cin >> bank2;
+                std::cin >> bank3;
+
+                broker.compare(getBank(bank1),getBank(bank2),getBank(bank3),getLoanType(type));
+            }
+            else{
+                broker.compare(bankslist,getLoanType(type));
+            }
+        }
+        }
+    }
     return 0;
 }
