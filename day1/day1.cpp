@@ -28,9 +28,6 @@ class Vehicle{
         }
 
         virtual int getNumOfWheels() = 0 ;
-        virtual void operator << (const Vehicle& v) = 0;
-        virtual bool operator < (const Vehicle& v) = 0;
-        virtual bool operator > (const Vehicle& v) = 0;
 
         //getter methods
         Type type() const
@@ -54,7 +51,21 @@ class Vehicle{
             return this->price;
         }
 
+        friend std::ostream &operator << (std::ostream &outStream, const Vehicle& vehicle)
+        {
+            std::cout <<"BRAND : "<<vehicle.vehicleBrand()<<"\nMODEL : "<<vehicle.vehicleModel()<<"\nVEHICLETYPE : "<<VEHICLES[vehicle.type()]<<"\nCOLOUR : "<<vehicle.vehicleColour()<<"\nPRICE : "<<vehicle.vehiclePrice()<<"\n\n";
+        }
 
+        bool operator < (const Vehicle& vehicle)
+        {
+            return vehiclePrice() < vehicle.vehiclePrice();
+        }
+
+        
+        bool operator > (const Vehicle& vehicle)
+        {            
+            return vehiclePrice() > vehicle.vehiclePrice();
+        }
 };
 
 //Inherits from Vehicle.
@@ -73,23 +84,7 @@ class Bike : public Vehicle{
 
         int getNumOfWheels()
         {
-            return 2;
-        }
-
-        void operator << (const Vehicle& vehicle)
-        {
-            std::cout <<"BRAND : "<<vehicle.vehicleBrand()<<"\nMODEL : "<<vehicle.vehicleModel()<<"\nVEHICLETYPE : "<<vehicle.type()<<"\nCOLOUR : "<<vehicle.vehicleColour()<<"\nPRICE : "<<vehicle.vehiclePrice()<<"\n\n";
-        }
-
-        bool operator < (const Vehicle& vehicle)
-        {
-            return vehiclePrice() < vehicle.vehiclePrice();
-        }
-
-        
-        bool operator > (const Vehicle& vehicle)
-        {            
-            return vehiclePrice() > vehicle.vehiclePrice();
+            std::cout << 2 << "\n";
         }
 };
 
@@ -109,23 +104,7 @@ class Car : public Vehicle{
 
         int getNumOfWheels()
         {
-            return 4;
-        }
-
-        void operator << (const Vehicle& vehicle)
-        {
-            std::cout <<"BRAND : "<<vehicle.vehicleBrand()<<"\nMODEL : "<<vehicle.vehicleModel()<<"\nVEHICLETYPE : "<<vehicle.type()<<"\nCOLOUR : "<<vehicle.vehicleColour()<<"\nPRICE : "<<vehicle.vehiclePrice()<<"\n\n";
-        }
-
-        bool operator < (const Vehicle& vehicle)
-        {
-            return vehiclePrice() < vehicle.vehiclePrice();
-        }
-
-        
-        bool operator > (const Vehicle& vehicle)
-        {
-            return vehiclePrice() < vehicle.vehiclePrice();
+            std::cout << 4 << "\n";
         }
 
 };
@@ -144,9 +123,9 @@ int main()
     heroHonda.getNumOfWheels();
 
     //Operator overloading for << operator.
-    tvsScooty << tvsScooty;
-    fordMustang << fordMustang;
-    heroHonda << heroHonda;
+    std::cout << tvsScooty;
+    std::cout << fordMustang;
+    std::cout << heroHonda;
 
     //Operator overloading for < and > operator
     std::cout << ( ( heroHonda < fordMustang )? "FORD MUSTANG IS COSTLIER THAN HERO HONDA" : "FORD MUSTANG IS CHEAPER THAN HERO HONDA" ) << "\n";
