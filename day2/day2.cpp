@@ -268,7 +268,7 @@ void banner ()
     std::cout << "\n6 --- COMPARE BANKS\n\n\nKEY" << std::endl;
     std::cout << "GOLD LOAN TYPES\n0 --- GOLDLOAN\n1 --- LANDLOAN\n2 --- PERSONALLOAN\n\n\n" << std::endl;
     std::cout << "BANK TYPES\n0 --- PUBLICSECTOR\n1 --- PRIVATESECTOR\n\n\n" << std::endl;
-    std::cout << "COMPARISON\n1 --- TWO BANKS\n2 --- THREE BANKS\n3 --- ALL BANKS";
+    std::cout << "COMPARISON\n1 --- TWO BANKS\n2 --- THREE BANKS\n3 --- ALL BANKS\n";
 }
 Type getBankType(int num)
 {
