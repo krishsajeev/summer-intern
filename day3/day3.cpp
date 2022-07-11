@@ -348,13 +348,18 @@ int main()
     // Function for finding the groups and sizes
     findGroups(graph, isVisited, labels, &leaderSize, &count, &leaderLabel, &groups, rows, cols);
 
-    std::cout << "\nTHE GROUPS ARE" << std::endl;
-    for (int i = 0; i < count; i++)
-    {
-        std::cout << groups[i] << " ";
+    int option;
+    std::cout << "DO YOU WANT TO FIND THE GROUPS AND THE LEADER [ 1 / 0 ]?" << std::endl;
+    std::cin >> option;
+    if(option==1){
+        std::cout << "\nTHE GROUPS ARE" << std::endl;
+        for (int i = 0; i < count; i++)
+        {
+            std::cout << groups[i] << " ";
+        }
+        std::cout << "\nTHE NUMBER OF GROUPS ARE " << count;
+        std::cout << "\nTHE LEADER HAS A SIZE OF " << leaderSize << std::endl;
     }
-    std::cout << "\nTHE NUMBER OF GROUPS ARE " << count;
-    std::cout << "\nTHE LEADER HAS A SIZE OF " << leaderSize << std::endl;
 
     int *distances = new int[count];
     for (int i = 0; i < count; i++)
@@ -373,23 +378,28 @@ int main()
     // Function to find the shortest path from the leaser group to all other groups
     findShortestPath(distances, isVisited, labels, leaderLabel, rows, cols);
 
-    /*
-    std::cout << "THE DISTANCE VECTOR IS (EDGES)" << std::endl;
-    for(int i=0;i<count;i++){
-        std::cout << distances[i] << " ";
-    }
-    */
 
-    std::cout << "\nTHE DISTANCE VECTOR IS (VERTICES)" << std::endl;
-    for (int i = 0; i < count; i++)
-    {
-        if (i == leaderLabel - 1)
-        {
+    std::cout << "DO YOU WANT TO FIND THE SHORTEST PATH FROM THE LEADER TO OTHER GROUPS? [ 1/0 ]\n";
+    std::cin >> option;
+    if(option==1){
+        /*
+        std::cout << "THE DISTANCE VECTOR IS (EDGES)" << std::endl;
+        for(int i=0;i<count;i++){
             std::cout << distances[i] << " ";
         }
-        else
+        */
+
+        std::cout << "\nTHE DISTANCE VECTOR IS (VERTICES)" << std::endl;
+        for (int i = 0; i < count; i++)
         {
-            std::cout << distances[i] - 1 << " ";
+            if (i == leaderLabel - 1)
+            {
+                std::cout << distances[i] << " ";
+            }
+            else
+            {
+                std::cout << distances[i] - 1 << " ";
+            }
         }
     }
 
