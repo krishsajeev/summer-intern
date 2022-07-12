@@ -270,7 +270,6 @@ void findGroups(int **graph, bool **isVisited, int **labels, int *leaderSize, in
 int main()
 {
     // Sample Test Case.
-    /*
     int mat[5][5] = {
         {0, 2, 0, 3, 1},
         {4, 1, 2, 0, 0},
@@ -278,17 +277,16 @@ int main()
         {0, 1, 0, 2, 3},
         {0, 0, 1, 1, 0},
     };
-    */
 
     int rows, cols;
     std::cout << "Enter the number of rows and cols:" << "\n";
-    std::cin >> rows;
-    std::cin >> cols;
+    //std::cin >> rows;
+    //std::cin >> cols;
 
     // Sample Test Case
 
-    // rows = 5;
-    // cols = 5;
+    rows = 5;
+    cols = 5;
 
     // Create memory from the heap.
     int **graph = new int *[rows];
@@ -324,9 +322,9 @@ int main()
     {
         for (int j = 0; j < cols; j++)
         {
-            std::cin >> graph[i][j];
+            //std::cin >> graph[i][j];
             // Automated input for Sample Test Case
-            // graph[i][j] = mat[i][j];
+            graph[i][j] = mat[i][j];
         }
     }
 
