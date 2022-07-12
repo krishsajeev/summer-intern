@@ -10,8 +10,7 @@ This algorithm considers the city as an undirected, unit-weighted graph with max
 Note - The last step is done as a preprocessing step for the following function
 
 #### ALGORITHM TO FIND THE SHORTEST PATH
-    (Done using Dynamic programming)
-    Initialise a distance vector with all cells as INT_MAX.
-    Create a custom queue datastructure (Since the problem states not to use STL !).
-    Do a BFS on the graph for each vertex which is a part of the leader group.
-    Find the distance and minimize the distance vector.
+    Create vectors for each label.
+    For each co-ordinate in the leader-vector, iterate through the non-leader vectors.
+    Find the minimal distance.
+    (The previous step has been optimised by leveraging the sorted order of the co-ordinates)
