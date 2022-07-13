@@ -16,6 +16,8 @@ class Sensor{
 
         virtual void setListener(const std::function<void(float)>& fun) = 0;
         virtual void onChange() = 0;
+        
+        virtual bool available() = 0;
 };
 class Actuator{
     public:
@@ -23,6 +25,7 @@ class Actuator{
         virtual void onConnect() = 0;
         virtual void onDisconnect() = 0;
         virtual bool getStatus() = 0;
+        virtual bool available() = 0;
 };
 
 class Fan : public Actuator{
@@ -36,14 +39,19 @@ class Fan : public Actuator{
         }
         void onConnect()
         {
-            
+            isConnected = true;
         }
         void onDisconnect()
         {
-            
+            isConnected = false;
         }
-        bool getStatus(){
+        bool getStatus()
+        {
             return state;
+        }
+        bool available()
+        {
+            return isConnected;
         }
 };
 
@@ -58,14 +66,19 @@ class Light : public Actuator{
         }
         void onConnect()
         {
-
+            isConnected = true;
         }
         void onDisconnect()
         {
-            
+            isConnected = false;
         }
-        bool getStatus(){
+        bool getStatus()
+        {
             return state;
+        }
+        bool available()
+        {
+            return isConnected;
         }
 };
 
@@ -80,14 +93,19 @@ class Door : public Actuator{
         }
         void onConnect()
         {
-            
+            isConnected = true;
         }
         void onDisconnect()
         {
-            
+            isConnected = false;
         }
-        bool getStatus(){
+        bool getStatus()
+        {
             return state;
+        }
+        bool available()
+        {
+            return isConnected;
         }
 };
 
@@ -126,11 +144,15 @@ class TemperatureSensor : public Sensor{
 
         void onConnect()
         {
-            
+            isConnected = true;
         }
         void onDisconnect()
         {
-            
+            isConnected = false;
+        }
+        bool available()
+        {
+            return isConnected;
         }
 };
 
@@ -169,11 +191,15 @@ class MotionSensor : public Sensor{
 
         void onConnect()
         {
-            
+            isConnected = true;
         }
         void onDisconnect()
         {
-            
+            isConnected = false;
+        }
+        bool available()
+        {
+            return isConnected;
         }
 };
 
@@ -212,11 +238,15 @@ class WaterLevelSensor : public Sensor{
 
         void onConnect()
         {
-            
+            isConnected = true;
         }
         void onDisconnect()
         {
-            
+            isConnected = false;
+        }
+        bool available()
+        {
+            return isConnected;
         }
 };
 
@@ -243,6 +273,8 @@ class GasSensor : public Sensor{
 
         void setListener(const std::function<void(float)>& fun)
         {
+            if(!isConnected)
+                return;
             subscribers.push_back(fun);
             onChange();
         }
@@ -254,11 +286,15 @@ class GasSensor : public Sensor{
         }
         void onConnect()
         {
-            
+            isConnected = true;
         }
         void onDisconnect()
         {
-            
+            isConnected = false;
+        }
+        bool available()
+        {
+            return isConnected;
         }
 };
 
@@ -279,8 +315,8 @@ bool compare(float data1, int mode, float data2)
 }
 
 void banner(){
-    std::string str1 = "1. SIMULATE INPUT\n2. DEVICE AUTOMATION\n\n--------\n";
-    std::string str2 = "KEY CODES\n1. Increase Value\n2.Decrease Value\n3.Connect Device\n4.Disconnect Device\n\n--------\n";
+    std::string str1 = "1. SIMULATE INPUT\n2. DEVICE AUTOMATION\n3. DEVICE STATUS\n--------\n";
+    std::string str2 = "KEY CODES\n1. Increase Value\n2. Decrease Value\n3. Connect Device\n4. Disconnect Device\n\n--------\n";
     std::cout << str1;
     std::cout << str2;
 }
@@ -296,8 +332,6 @@ int main()
     Door door;
     Light light;
 
-    //Sensor* s = &temp;
-    
     std::map<std::string, Sensor*> sensors;
     sensors = {
                 {"TEMPERATURE", &temp},
@@ -314,14 +348,15 @@ int main()
                 };
 
 
+    banner();
     while(1){
         std::cout << "\n\n\n-----------\n\nENTER THE OPTION\n";
         int option;
         std::cin >> option;
         if(option == 1) { //Simulate input
-            std::string sensor;
-            std::cout << "ENTER THE SENSOR NAME\n";
-            std::cin >> sensor;
+            std::string name;
+            std::cout << "ENTER THE DEVICE NAME\n";
+            std::cin >> name;
 
             int key;
             std::cout << "ENTER KEY CODE\n";
@@ -332,7 +367,7 @@ int main()
                     int val;
                     std::cout << "ENTER THE VALUE\n";
                     std::cin >> val;
-                    sensors[sensor]->increase(val);
+                    sensors[name]->increase(val);
 
                     break;
                 }
@@ -341,19 +376,27 @@ int main()
                     int val;
                     std::cout << "ENTER THE VALUE\n";
                     std::cin >> val;
-                    sensors[sensor]->decrease(val);
+                    sensors[name]->decrease(val);
 
                     break;
                 }
                 case 3:
                 {
-                    sensors[sensor]->onConnect();
+                    if(sensors.find(name) != sensors.end())
+                        sensors[name]->onConnect();
+
+                    if(actuators.find(name) != actuators.end())
+                        actuators[name]->onConnect();
 
                     break;
                 }
                 case 4:
                 {
-                    sensors[sensor]->onDisconnect();
+                    if(sensors.find(name) != sensors.end())
+                        sensors[name]->onDisconnect();
+
+                    if(actuators.find(name) != actuators.end())
+                        actuators[name]->onDisconnect();
 
                     break;
                 }
@@ -382,7 +425,7 @@ int main()
             Actuator* a = actuators[actuatorName];
 
             sensors[sensorName]->setListener([val, ch, a, action](int reading)->void{
-                if(compare(reading, (int)ch, val)){
+                if(a->available() && compare(reading, (int)ch, val)){
                     a->setData(action);
                 }
             });
@@ -391,14 +434,15 @@ int main()
         else{
                 std::cout << "DEVICES    ----    STATUS" << std::endl;
                 for(auto m: sensors){
-                    std::cout << m.first << ": " << m.second->getData() << std::endl;
+                    if(m.second->available())
+                        std::cout << m.first << ": " << m.second->getData() << std::endl;
                 }
                 for(auto m: actuators){
-                    std::cout << m.first << ": " << m.second->getStatus() << std::endl;
+                    if(m.second->available())
+                        std::cout << m.first << ": " << m.second->getStatus() << std::endl;
                 }
         }
     }
-
 
     return 0;
 }
