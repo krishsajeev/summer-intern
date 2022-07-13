@@ -45,14 +45,14 @@ class Student{
                 course=toUpperCase(course);
 
                 if(!(age >= 15 && age <= 21)) {
-                    throw new StudentException("\nAgeNotValidException", "Age is not in the range");
+                    throw StudentException("\nAgeNotValidException", "Age is not in the range");
                 }
                 for(int i = 0; i < name.length(); i++){
                     if(((int)name[i] < 65 || (int)name[i] > 90) && ((int)name[i] < 97 || (int)name[i] > 122))
                     throw StudentException("\nNameNotValidException", "Name is not in correct format");
                 }
                 if(courses.find(course) == courses.end()){
-                    throw StudentException("\nINvalidCourseException", "Course does not exist");
+                    throw StudentException("\nInvalidCourseException", "Course does not exist");
                 }
             }
             catch(const std::exception &e){
@@ -69,7 +69,7 @@ class Student{
         static Student* getObject(int rollno, std::string name, int age, std::string course)
         {
             if(!ptr)
-                ptr= new Student(123, "sajeev", 20, "CPP");
+                ptr= new Student(rollno, name, age, course);
 
             return ptr;
         }
@@ -98,7 +98,12 @@ Student *Student::ptr = 0;
 
 int main()
 {
-    Student* stud = stud->getObject(123, "SAJEEV", 20, "CPP");
+    Student* stud1 = stud1->getObject(123, "SAJEEV", 20, "CPP");
     
-    std::cout << stud->studentRollno() << stud->studentName() << stud->studentAge() << stud->studentCourse() ;
+    std::cout << stud1->studentRollno() << stud1->studentName() << stud1->studentAge() << stud1->studentCourse() << std::endl ;
+
+    
+    Student* stud2 = stud2->getObject(123, "KRISHNA", 100, "CPP");
+    std::cout << stud2->studentRollno() << stud2->studentName() << stud2->studentAge() << stud2->studentCourse() ;
+
 }

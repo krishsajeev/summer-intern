@@ -6,7 +6,7 @@ int main()
     bool inner=false;
     bool outer=false;
     try{
-        int num=-5;
+        int num=6000;
         std::cout << "ENTER A NATURAL NUMBER WHICH IS GREATER THAN 1000\n";
         //std::cin >> num;
         if(num<0){
