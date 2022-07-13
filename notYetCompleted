@@ -1,0 +1,352 @@
+#include<iostream>
+#include<functional>
+#include<vector>
+#include<map>
+
+class Sensor{
+    public:
+        int sendData() {        }
+        void onConnect() {        }
+        void onDisconnect() {        }
+};
+class Actuator{
+    public:
+        int state;
+        void setData(int action)
+        {
+            state=action;
+        }
+        void onConnect() {        }
+        void onDisconnect() {        }
+};
+
+class Fan : public Actuator{
+    public:
+        void setData(int action)
+        {
+            state=action;
+            std::cout << "fan IS ON";
+        }
+        void onConnect() {        }
+        void onDisconnect() {        }
+};
+
+class Light : public Actuator{
+    public:
+        void setData(int action)
+        {
+            state=action;
+            std::cout << "light IS ON";
+        }
+        void onConnect() {        }
+        void onDisconnect() {        }
+};
+
+class Door : public Actuator{
+    private:
+        int state;
+    public:
+        void setData(int action)
+        {
+            state=action;
+            std::cout << "door IS ON";
+        }
+        void onConnect() {        }
+        void onDisconnect() {        }
+};
+
+class TemperatureSensor : public Sensor{
+    private:
+        int temperature=0;
+        std::vector<std::function<void(int)>> subscribers;
+    public:
+        void increase(int delta)
+        {
+            temperature += delta;
+            onTemperatureChange();
+        }
+        void decrease(int delta)
+        {
+            temperature -= delta;
+            onTemperatureChange();
+        }
+        int getData()
+        {
+            return temperature;
+        }
+
+        void setTemperatureListener(const std::function<void(int)>& fun)
+        {
+            subscribers.push_back(fun);
+        }
+        void onTemperatureChange()
+        {
+            for(int i=0; i<subscribers.size(); i++){
+                subscribers[i](this->temperature);
+            }
+        }
+
+        void onConnect() {        }
+        void onDisconnect() {        }
+};
+
+class MotionSensor : public Sensor{
+    private:
+        int motion=0;
+        std::vector<std::function<void(int)>> subscribers;
+    public:
+        void increase(int delta)
+        {
+            motion += delta;
+            onTemperatureChange();
+        }
+        void decrease(int delta)
+        {
+            motion -= delta;
+            onTemperatureChange();
+        }
+        int getData()
+        {
+            return motion;
+        }
+
+        void setMotionListener(const std::function<void(int)>& fun)
+        {
+            subscribers.push_back(fun);
+        }
+        void onTemperatureChange()
+        {
+            for(int i=0; i<subscribers.size(); i++){
+                subscribers[i](this->motion);
+            }
+        }
+
+        void onConnect() {        }
+        void onDisconnect() {        }
+};
+
+class WaterLevelSensor : public Sensor{
+    private:
+        int waterLevel=0;
+        std::vector<std::function<void(int)>> subscribers;
+    public:
+        void increase(int delta)
+        {
+            waterLevel += delta;
+            onTemperatureChange();
+        }
+        void decrease(int delta)
+        {
+            waterLevel -= delta;
+            onTemperatureChange();
+        }
+        int getData()
+        {
+            return waterLevel;
+        }
+
+        void setWaterListener(const std::function<void(int)>& fun)
+        {
+            subscribers.push_back(fun);
+        }
+        void onTemperatureChange()
+        {
+            for(int i=0; i<subscribers.size(); i++){
+                subscribers[i](this->waterLevel);
+            }
+        }
+
+        void onConnect() {        }
+        void onDisconnect() {        }
+};
+
+class GasSensor : public Sensor{
+    private:
+        int gasLevel=0;
+        std::vector<std::function<void(int)>> subscribers;
+    public:
+        void increase(int delta)
+        {
+            gasLevel += delta;
+            onTemperatureChange();
+        }
+        void decrease(int delta)
+        {
+            gasLevel -= delta;
+            onTemperatureChange();
+        }
+        int getData()
+        {
+            return gasLevel;
+        }
+
+        void setGasListener(const std::function<void(int)>& fun)
+        {
+            subscribers.push_back(fun);
+        }
+        void onTemperatureChange()
+        {
+            for(int i=0; i<subscribers.size(); i++){
+                subscribers[i](this->gasLevel);
+            }
+        }
+        void onConnect() {        }
+        void onDisconnect() {        }
+};
+
+bool compare(int data1, int mode, int data2)
+{
+    switch (mode)
+    {
+    case 1:
+        return data1 > data2;
+        break;
+    case 2:
+        return data1 < data2;
+        break;
+    case 3:
+        return data1 == data2;
+        break;
+    }
+}
+
+void banner(){
+    std::string str1 = "1. SIMULATE INPUT\n2. DEVICE AUTOMATION\n\n--------\n";
+    std::string str2 = "KEY CODES\n1. Increase Value\n2.Decrease Value\n3.Connect Device\n4.Disconnect Device\n\n--------\n";
+    std::string str3 = "SENSOR CODES\n1. Temperature\n2. Gas\n3. Waterlevel\n4. Motion\n5. Fan\n6. Door\n7. Light\n\n--------\n";
+    std::cout << str1;
+    std::cout << str2;
+    std::cout << str3;
+}
+
+int main()
+{
+    TemperatureSensor temp;
+    GasSensor gas;
+    WaterLevelSensor water;
+    MotionSensor motion;
+    Fan fan;
+    Door door;
+    Light light;
+
+    
+
+    int threshold=21;
+    temp.setTemperatureListener([threshold, &fan](int temperature)->void{ 
+        if(compare(temperature,1, threshold)){
+            fan.setData(1);
+        }
+    });
+
+
+    while(1){
+        banner();
+        int option = -1;
+        std::cout << "ENTER THE OPTION\n";
+        std::cin >> option;
+        switch(option)
+        {
+        case 1:
+        {
+            std::cout << "ENTER THE SENSOR CODE\n";
+            int name;
+            std::cin >> name;
+            std::cout << "ENTER THE MODE\n";
+            int mode;
+            std::cin >> mode;
+            std::cout << "ENTER THE VALUE\n";
+            int del;
+            std::cin >> del;
+            switch(mode)
+            {
+            case 1: //Simulate Input
+            {
+                switch(name)
+                {
+                case 1:
+                    temp.increase(del);
+                    break;
+                case 2:
+                    gas.increase(del);
+                    break;
+                case 3:
+                    water.increase(del);
+                    break;
+                case 4:
+                    motion.increase(del);
+                    break;
+                }
+            }
+            break;
+            case 2:
+            {
+                switch(name)
+                {
+                case 1:
+                    temp.decrease(del);
+                    break;
+                case 2:
+                    gas.decrease(del);
+                    break;
+                case 3:
+                    water.decrease(del);
+                    break;
+                case 4:
+                    motion.decrease(del);
+                    break;
+                }
+            }
+            break;
+            case 3:
+            {
+                switch(name)
+                {
+                case 1:
+                    temp.onConnect();
+                    break;
+                case 2:
+                    gas.onConnect();
+                    break;
+                case 3:
+                    water.onConnect();
+                    break;
+                case 4:
+                    motion.onConnect();
+                    break;
+                }
+            }
+            break;
+            case 4:
+            {
+                switch(name)
+                {
+                case 1:
+                    temp.onDisconnect();
+                    break;
+                case 2:
+                    gas.onDisconnect();
+                    break;
+                case 3:
+                    water.onDisconnect();
+                    break;
+                case 4:
+                    motion.onDisconnect();
+                    break;
+                }
+            }
+            break;
+            }
+        }
+        break;
+        case 2:
+        {
+
+        }
+        break;
+        }
+    }
+
+
+    temp.increase(99);
+
+}
