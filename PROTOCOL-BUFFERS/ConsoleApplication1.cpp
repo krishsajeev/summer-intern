@@ -1,9 +1,8 @@
-// ConsoleApplication1.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
 #include <fstream>
 #include <iostream>
 #include "Login.pb.h"
 #include <regex>
+#include "sha256.h"
 #include <string>
 
 bool isValid(const std::string& email)
@@ -17,105 +16,115 @@ bool isValid(const std::string& email)
 	return regex_match(email, pattern);
 }
 
-int main(int argc, char* argv[]) {
-	GOOGLE_PROTOBUF_VERIFY_VERSION;
-
-	USERS::Users userlist;
-	USERS::User* userptr;
+int main()
+{
 	USERS::User user;
 
-	std::string DB = "temp.txt";
-
-	// Read from file.
-	std::fstream input(DB, std::ios_base::in | std::ios_base::binary);
-	if (input) {
-		userlist.ParseFromIstream(&input);
-	}
-	userptr = userlist.add_users();
+	auto mapobj = USERS::Users::default_instance();
+	auto map = mapobj.mutable_users();
 
 
-	std::cout << "WELCOME TO GITNOTES\n\n";
-	std::cout << "ENTER THE OPTION\n1 --- LOGIN\n2 --- SIGNUP\n";
+	std::fstream input("temp.txt", std::ios_base::in | std::ios_base::binary);
+	if (input)
+		mapobj.ParseFromIstream(&input);
 
-	int option;
-	std::cin >> option;
 
-	std::string id;
-	std::cout << "\nENTER USER ID\n" << std::endl;
-	std::cin >> id;
+	std::cout << "WELCOME TO GIT NOTE\n\n1 --- LOGIN\n2 --- SIGNUP\n";
 
-	std::string passwd;
-	std::cout << "\nENTER PASSWORD\n";
-	std::cin >> passwd;
+	while (1) {
+		int option;
+		std::cout << "\nENTER THE OPTION\n";
+		std::cin >> option;
 
-	bool flag = true;
-	while (flag) {
 		if (option == 1) {
-			for (int i = 0; i < userlist.users_size(); i++) {
-				if (id == userlist.users(i).userid() && passwd == userlist.users(i).passwd()) {
-					std::cout << "\n------- LOGGED IN SUCCESSFULLY ------\n";
-				}
-				else {
-					std::cout << "\nWRONG USER ID OR PASSWORD.\nTRY AGAIN\n";
-					continue;
-				}
-				if (innerflag) {
-					continue;
-				}
+			std::string userid;
+			std::cout << "\nENTER USERID\n";
+			std::cin >> userid;
+
+			std::string password;
+			std::cout << "\nENTER PASSWORD\n";
+			std::cin >> password;
+			password = sha256(password);
+
+			if (map->find(userid) != map->end() && (*(mapobj.mutable_users()))[userid].passwd() == password) {
+				std::cout << "\n---- LOGGED IN SUCCESFULLY ----\n";
+				break;
 			}
+			else {
+				std::cout << "\nWRONG USERID OR PASSWORD\nTRY AGAIN\n";
+				continue;
+			}
+
 		}
 		else if (option == 2) {
-
-			userptr->set_userid(id);
-
-			userptr->set_passwd(passwd);
-
 			std::string name;
-			std::cout << "\nENTER NAME\n" << std::endl;
+			std::cout << "\nENTER NAME\n";
 			std::cin >> name;
-			userptr->set_email(name);
-
-			std::string loc;
-			std::cout << "\nENTER LOCATION\n" << std::endl;
-			std::cin >> loc;
-			userptr->set_email(loc);
-
+			user.set_name(name);
 
 			std::string email;
-			std::cout << "\nENTER EMAIL ID\n" << std::endl;
+			std::cout << "\nENTER EMAIL\n";
 			std::cin >> email;
 			if (isValid(email)) {
-				userptr->set_email(email);
+				user.set_email(email);
 			}
 			else {
 				std::cout << "\nINVALID EMAIL\nTRY AGAIN\n";
 				continue;
 			}
 
-			std::cout << "\n------- SIGNED UP SUCCESSFULLY ------\n";
+			std::string passwd;
+			std::cout << "\nENTER PASSWORD\n";
+			std::cin >> passwd;
+			passwd = sha256(passwd);
+			user.set_passwd(passwd);
 
+			std::string location;
+			std::cout << "\nENTER LOCATION\n";
+			std::cin >> location;
+			user.set_location(location);
+
+			std::string userid;
+			std::cout << "\nENTER USERID\n";
+			std::cin >> userid;
+			user.set_userid(userid);
+
+			(*(mapobj.mutable_users()))[userid] = user;
+
+			std::cout << "\n---- SIGNED UP SUCCESSFULLY ----\n";
+
+			std::ofstream output("temp.txt", std::ios_base::out | std::ios_base::binary);
+			mapobj.SerializeToOstream(&output);
+			continue;
+		}
+		else {
+			for (auto it = map->begin(); it != map->end(); ++it)
+				std::cout << it->first << " => " << it->second.DebugString() << '\n';
 		}
 	}
-	
+
 
 	/*
-	userptr->set_name("sajeev");
-	userptr->set_email("124@gmail");
-	userptr->set_location("sdfsdfsd");
-	userptr->set_userid("9898");
-	userptr->set_passwd("dfdd");
+	
+	for (auto it = map->begin(); it != map->end(); ++it)
+		std::cout << it->first << " => " << it->second.DebugString() << '\n';
 	*/
+	/*
+	std::cout << (*(mapobj.mutable_users()))["df"].DebugString();
+	std::cout << (*(mapobj.mutable_users()))["bye"].DebugString();
+	*/
+	//(*(mapobj.mutable_users()))["bye"] = user;
+	
+	//std::ofstream output("temp.txt", std::ios_base::out | std::ios_base::binary);
+	//mapobj.SerializeToOstream(&output);
+	
 
-	// Write to file
-	std::ofstream ofs(DB, std::ios_base::out | std::ios_base::binary);
-	userlist.SerializeToOstream(&ofs);
+	//(*mutable_users())["key"] = user;
 
-	std::cout << "\nUSERSLIST\n";
-	for (int i = 0; i < userlist.users_size(); i++) {
-		user = userlist.users(i);
-		std::cout << user.DebugString();
-	}
 
-	return 1;
+
+
+
+
+
 }
-

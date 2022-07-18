@@ -11,5 +11,5 @@ message User {
 }
 
 message Users {
-    repeated User users = 1;
+    map<string, User> users = 1;
 }
