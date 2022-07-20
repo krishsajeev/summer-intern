@@ -43,6 +43,7 @@ DATA::Version* createNewVersion(DATA::Version* oldversion, DATA::Project* projec
 
 int main()
 {
+	int option = -1;
 	USERS::User user;
 
 	auto authMapObj = USERS::Users::default_instance();
@@ -62,18 +63,17 @@ LOGINPAGE:
 	UUID* uuid = nullptr;
 
 	while (1) {
-		int option;
 		std::cout << "\nENTER THE OPTION\n";
 		std::cin >> option;
 
 		if (option == 1) {
-			std::string email;
-			std::cout << "\nENTER EMAIL\n";
-			std::cin >> email;
+			std::string email = "krish@gmail.com";
+			//std::cout << "\nENTER EMAIL\n";
+			//std::cin >> email;
 
-			std::string password;
-			std::cout << "\nENTER PASSWORD\n";
-			std::cin >> password;
+			std::string password = "password";
+			//std::cout << "\nENTER PASSWORD\n";
+			//std::cin >> password;
 			password = sha256(password);
 
 			if (authMap->find(email) != authMap->end() && (*authMap)[email].passwd() == password) {
@@ -151,6 +151,8 @@ LOGINPAGE:
 
 	auto gitNoteMap = gitNoteObj.mutable_workspaces();
 
+	std::cout << gitNoteObj.DebugString();
+
 	DATA::Workspace* workspaceObj;
 
 	if (gitNoteMap->contains(user.userid())) {
@@ -169,7 +171,7 @@ PROJECTPAGE:
 
 	DATA::Project* projectObj = nullptr;
 
-	int option;
+	option = -1;
 	std::cout << "\nENTER OPTION\n1 --- OPEN EXISTING PROJECT\n2 --- CREATE NEW PROJECT\n3 --- DISPLAY AVAILABLE PROJECTS\n4 --- GO BACK\n";
 	std::cin >> option;
 	if (option == 1) { //existing
@@ -210,13 +212,13 @@ VERSIONPAGE:
 		versionObj = projectObj->mutable_versions(projectObj->currentversion());
 
 		std::cout << "\nTHE AVAILABLE VERSIONS ARE\n";
-		for (int i = 0; i < projectObj->versions_size(); i++) {
+		for (int i = 0; i <= projectObj->currentversion(); i++) {
 			std::cout << projectObj->versions(i).versionnumber() << " " << projectObj->versions(i).versionid() << std::endl;
 		}
 
 		std::cout << "\nDO YOU WANT TO START EDITING FROM THE LATEST VERSION OR REVERT BACK TO AN OLDER VERSION ?\n";
 		std::cout << "\n1 --- START EDITING\n2 --- REVERT BACK\n";
-		int option;
+		option = -1;
 		std::cin >> option;
 		if (option == 2) {
 			int sourceversion = projectObj->currentversion();
@@ -228,17 +230,15 @@ VERSIONPAGE:
 
 			int times = sourceversion - destversion;
 			while (times > 0) {
-				std::cout << projectObj->versions(projectObj->versions_size() - 1).versionid() << std::endl;
+				//std::cout << projectObj->versions(projectObj->versions_size() - 1).versionid() << std::endl;
 				(projectObj->mutable_versions())->RemoveLast();
 				times--;
 				projectObj->set_currentversion(projectObj->currentversion() - 1);
-				std::cout << "   ejected";
+				//std::cout << "   ejected";
 			}
 			versionObj = projectObj->mutable_versions(projectObj->currentversion());
-			std::cout << "current v " << versionObj->versionid();
-			/*
-			for(int i=0;i< (*(versionObj->mutable_files()))["testfile"].lines_size();i++)
-				(*(versionObj->mutable_files()))["testfile"].lines(i);*/
+			//std::cout << "current v " << versionObj->versionid();
+			
 		}
 	}
 	else {
@@ -260,6 +260,7 @@ FILEPAGE:
 
 	auto versionMap = versionObj->mutable_files();
 	DATA::File* fileObj = nullptr;
+	option = -1;
 	std::cout << "\nENTER THE OPTION\n1 --- OPEN EXISTING FILE\n2 --- CREATE NEW FILE\n3 --- DISPLAY AVAILABLE FILES\n4 --- GO BACK\n";
 	std::cin >> option;
 
@@ -301,8 +302,6 @@ FILEPAGE:
 			fileObj->add_lines(data);
 			versionObj->set_opsnumber(versionObj->opsnumber() + 1);
 
-			std::cout << "before\n";
-			std::cout << versionObj->DebugString();
 
 			if (versionObj->opsnumber() == 1) {
 				versionObj = createNewVersion(versionObj, projectObj, uuid);
@@ -310,8 +309,6 @@ FILEPAGE:
 				fileObj = &(*versionMap)[fileObj->name()];
 			}
 
-			std::cout << "after\n";
-			std::cout << versionObj->DebugString();
 		}
 		else if (option == 2) {
 			std::cout << "\nENTER THE LINE NUMBER\n";
@@ -328,6 +325,8 @@ FILEPAGE:
 			versionObj->set_opsnumber(versionObj->opsnumber() + 1);
 			if (versionObj->opsnumber() == 1) {
 				versionObj = createNewVersion(versionObj, projectObj, uuid);
+				versionMap = versionObj->mutable_files();
+				fileObj = &(*versionMap)[fileObj->name()];
 			}
 
 		}
@@ -340,9 +339,12 @@ FILEPAGE:
 			int linenum;
 			std::cin >> linenum;
 			fileObj->set_lines(linenum, data);
-			versionObj->set_opsnumber(versionObj->opsnumber() + 1);
-			if (versionObj->opsnumber() == 1)
+			versionObj->set_opsnumber(versionObj->opsnumber() + 1);			
+			if (versionObj->opsnumber() == 1) {
 				versionObj = createNewVersion(versionObj, projectObj, uuid);
+				versionMap = versionObj->mutable_files();
+				fileObj = &(*versionMap)[fileObj->name()];
+			}
 
 		}
 		else if (option == 4) {
@@ -357,6 +359,8 @@ FILEPAGE:
 		else {
 			std::ofstream output1(DATA + "temp.txt", std::ios_base::out | std::ios_base::binary);
 			gitNoteObj.SerializeToOstream(&output1);
+
+
 			goto LOGINPAGE;
 		}
 	}
