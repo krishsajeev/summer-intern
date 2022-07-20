@@ -200,7 +200,7 @@ PROJECTPAGE:
 			std::cout << it->first << std::endl;
 		goto PROJECTPAGE;
 	}
-	else {
+	else if(option == 3) {
 		goto LOGINPAGE;
 	}
 
@@ -228,6 +228,8 @@ VERSIONPAGE:
 			std::cout << "\nENTER THE VERSION YOU NEED TO REVERT BACK TO\n";
 			std::cin >> destversion;
 
+			std::cout << "old\n" << projectObj->DebugString();
+
 			int times = sourceversion - destversion;
 			while (times > 0) {
 				//std::cout << projectObj->versions(projectObj->versions_size() - 1).versionid() << std::endl;
@@ -238,7 +240,9 @@ VERSIONPAGE:
 			}
 			versionObj = projectObj->mutable_versions(projectObj->currentversion());
 			//std::cout << "current v " << versionObj->versionid();
-			
+
+			std::cout << "new\n" << projectObj->DebugString();
+
 		}
 	}
 	else {
@@ -261,7 +265,7 @@ FILEPAGE:
 	auto versionMap = versionObj->mutable_files();
 	DATA::File* fileObj = nullptr;
 	option = -1;
-	std::cout << "\nENTER THE OPTION\n1 --- OPEN EXISTING FILE\n2 --- CREATE NEW FILE\n3 --- DISPLAY AVAILABLE FILES\n4 --- GO BACK\n";
+	std::cout << "\nENTER THE OPTION\n1 --- OPEN EXISTING FILE\n2 --- CREATE NEW FILE\n3 --- DISPLAY AVAILABLE FILES\n4 --- GO BACK\n5 --- EXIT\n";
 	std::cin >> option;
 
 	if (option == 1) {
@@ -287,8 +291,11 @@ FILEPAGE:
 		goto FILEPAGE;
 
 	}
-	else {
+	else if(option == 4) {
 		goto PROJECTPAGE;
+	}
+	else {
+		goto EXIT;
 	}
 
 	while (1) {
