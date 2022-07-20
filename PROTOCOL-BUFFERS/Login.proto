@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package USERS;
+
+message User {
+    optional string name = 1;
+    optional string email = 2;
+    optional string passwd = 3 ;
+    optional string location = 4;
+    optional string userID = 5;
+}
+
+message Users {
+    map<string, User> users = 1;
+}
