@@ -1,6 +1,6 @@
 ### WORK DONE
 
-✅ Fixed bugs
-✅ Upload pb.cc and pb.h files
-✅ Move LOGINPAGE into a separate file
-   Roll out a new feature
+✅ Fixed bugs <br>
+✅ Upload pb.cc and pb.h files <br>
+✅ Move LOGINPAGE into a separate file <br>
+- [ ] Roll out a new feature <br>
