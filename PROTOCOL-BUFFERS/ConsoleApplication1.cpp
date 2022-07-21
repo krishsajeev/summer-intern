@@ -27,8 +27,6 @@ DATA::Version* createNewVersion(DATA::Version* oldversion, DATA::Project* projec
 	return newversion;
 }
 
-
-
 int main()
 {
 	UUID* uuid = nullptr;
