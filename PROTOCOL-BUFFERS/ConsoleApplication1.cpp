@@ -4,7 +4,9 @@
 #include <regex>
 #include "sha256.h"
 #include <string>
+#include <ctime>
 #include "Workspace.pb.h"
+
 
 class UUID {
 private:
@@ -32,11 +34,12 @@ DATA::Version* createNewVersion(DATA::Version* oldversion, DATA::Project* projec
 	project->set_currentversion(project->currentversion() + 1);
 
 	newversion->CopyFrom(*oldversion);
-
 	newversion->set_versionid(uuid->genID());
 	newversion->set_versionnumber(project->currentversion());
 	newversion->set_opsnumber(0);
-	newversion->set_createdtime("now");
+
+	time_t now = time(0);
+	newversion->set_createdtime(ctime(&now));
 	std::cout << "\nCREATED NEW VERSION --- " << newversion->versionid() << std::endl;
 	return newversion;
 }
@@ -68,11 +71,11 @@ LOGINPAGE:
 
 		if (option == 1) {
 			std::string email = "krish@gmail.com";
-			//std::cout << "\nENTER EMAIL\n";
+			std::cout << "\nENTER EMAIL\n";
 			//std::cin >> email;
 
 			std::string password = "password";
-			//std::cout << "\nENTER PASSWORD\n";
+			std::cout << "\nENTER PASSWORD\n";
 			//std::cin >> password;
 			password = sha256(password);
 
@@ -151,7 +154,7 @@ LOGINPAGE:
 
 	auto gitNoteMap = gitNoteObj.mutable_workspaces();
 
-	std::cout << gitNoteObj.DebugString();
+	//std::cout << gitNoteObj.DebugString();
 
 	DATA::Workspace* workspaceObj;
 
@@ -228,7 +231,7 @@ VERSIONPAGE:
 			std::cout << "\nENTER THE VERSION YOU NEED TO REVERT BACK TO\n";
 			std::cin >> destversion;
 
-			std::cout << "old\n" << projectObj->DebugString();
+			//std::cout << "old\n" << projectObj->DebugString();
 
 			int times = sourceversion - destversion;
 			while (times > 0) {
@@ -241,7 +244,7 @@ VERSIONPAGE:
 			versionObj = projectObj->mutable_versions(projectObj->currentversion());
 			//std::cout << "current v " << versionObj->versionid();
 
-			std::cout << "new\n" << projectObj->DebugString();
+			//std::cout << "new\n" << projectObj->DebugString();
 
 		}
 	}
@@ -254,10 +257,11 @@ VERSIONPAGE:
 		std::cout << "\nCREATED NEW VERSION --- " << versionObj->versionid() << std::endl;
 		versionObj->set_versionnumber(projectObj->currentversion());
 		versionObj->set_opsnumber(0);
-		versionObj->set_createdtime("now");
+
+		time_t now = time(0);
+		versionObj->set_createdtime(ctime(&now));
 
 	}
-
 
 
 FILEPAGE:
@@ -298,7 +302,12 @@ FILEPAGE:
 		goto EXIT;
 	}
 
+
 	while (1) {
+
+		//std::cout << "version object " << versionObj->DebugString();
+		//std::cout << "file " << fileObj->DebugString();
+
 		std::cout << "\nENTER THE OPERATION\n1 --- ADD\n2 --- REMOVE\n3 --- UPDATE\n4 --- DISPLAY\n5 --- GO BACK\n* --- LOGOUT\n";
 		std::cin >> option;
 		if (option == 1) {
@@ -310,7 +319,7 @@ FILEPAGE:
 			versionObj->set_opsnumber(versionObj->opsnumber() + 1);
 
 
-			if (versionObj->opsnumber() == 1) {
+			if (versionObj->opsnumber() >= 1) {
 				versionObj = createNewVersion(versionObj, projectObj, uuid);
 				versionMap = versionObj->mutable_files();
 				fileObj = &(*versionMap)[fileObj->name()];
@@ -330,7 +339,7 @@ FILEPAGE:
 			//foo.mutable_repeated_field()->RemoveLast();
 
 			versionObj->set_opsnumber(versionObj->opsnumber() + 1);
-			if (versionObj->opsnumber() == 1) {
+			if (versionObj->opsnumber() >= 1) {
 				versionObj = createNewVersion(versionObj, projectObj, uuid);
 				versionMap = versionObj->mutable_files();
 				fileObj = &(*versionMap)[fileObj->name()];
@@ -347,7 +356,7 @@ FILEPAGE:
 			std::cin >> linenum;
 			fileObj->set_lines(linenum, data);
 			versionObj->set_opsnumber(versionObj->opsnumber() + 1);			
-			if (versionObj->opsnumber() == 1) {
+			if (versionObj->opsnumber() >= 1) {
 				versionObj = createNewVersion(versionObj, projectObj, uuid);
 				versionMap = versionObj->mutable_files();
 				fileObj = &(*versionMap)[fileObj->name()];
@@ -364,9 +373,11 @@ FILEPAGE:
 			goto FILEPAGE;
 		}
 		else {
+			(projectObj->mutable_versions())->RemoveLast();
+			projectObj->set_currentversion(projectObj->currentversion() - 1);
+			versionObj = projectObj->mutable_versions(projectObj->currentversion());
 			std::ofstream output1(DATA + "temp.txt", std::ios_base::out | std::ios_base::binary);
 			gitNoteObj.SerializeToOstream(&output1);
-
 
 			goto LOGINPAGE;
 		}
