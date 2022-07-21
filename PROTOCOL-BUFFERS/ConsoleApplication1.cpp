@@ -1,5 +1,17 @@
 #include "Helper.h"
 
+class UUID {
+public:
+	std::string seed = "";
+	UUID(std::string seed) {
+		this->seed = seed;
+	}
+	std::string genID() {
+		seed = sha256((seed + seed));
+		return seed;
+	}
+};
+
 DATA::Version* createNewVersion(DATA::Version* oldversion, DATA::Project* project, UUID* uuid) {
 	DATA::Version* newversion = project->add_versions();
 	project->set_currentversion(project->currentversion() + 1);
@@ -18,12 +30,20 @@ DATA::Version* createNewVersion(DATA::Version* oldversion, DATA::Project* projec
 int main()
 {
 	UUID* uuid = nullptr;
+
 	int option;
 	const std::string DATA = "./DB/DATA/";
+
 LOGINPAGE:
 	USERS::User user;
 	Authenticator authn;
-	authn.login(uuid,&user);
+	authn.login(&user);
+	
+	UUID temp(user.email());
+	uuid = &temp;
+	user.set_email(uuid->genID());
+
+	std::cout << "\n------ THE CURRENT USER IS ------\n" << user.userid() << "\n";
 
 	DATA::GitNote gitNoteObj = DATA::GitNote::default_instance();
 
@@ -33,7 +53,6 @@ LOGINPAGE:
 
 	auto gitNoteMap = gitNoteObj.mutable_workspaces();
 
-	//std::cout << gitNoteObj.DebugString();
 
 	DATA::Workspace* workspaceObj;
 
