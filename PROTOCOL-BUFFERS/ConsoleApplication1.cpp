@@ -70,13 +70,13 @@ LOGINPAGE:
 		std::cin >> option;
 
 		if (option == 1) {
-			std::string email = "krish@gmail.com";
+			std::string email;
 			std::cout << "\nENTER EMAIL\n";
-			//std::cin >> email;
+			std::cin >> email;
 
-			std::string password = "password";
+			std::string password; // = password
 			std::cout << "\nENTER PASSWORD\n";
-			//std::cin >> password;
+			std::cin >> password;
 			password = sha256(password);
 
 			if (authMap->find(email) != authMap->end() && (*authMap)[email].passwd() == password) {
