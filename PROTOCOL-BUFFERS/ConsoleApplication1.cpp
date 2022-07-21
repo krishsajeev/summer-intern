@@ -118,31 +118,26 @@ VERSIONPAGE:
 		}
 
 		std::cout << "\nDO YOU WANT TO START EDITING FROM THE LATEST VERSION OR REVERT BACK TO AN OLDER VERSION ?\n";
-		std::cout << "\n1 --- START EDITING\n2 --- REVERT BACK\n";
+		std::cout << "\n1 --- START EDITING\n2 --- REVERT BACK\n3 --- LOAD DIFF\n";
 		option = -1;
 		std::cin >> option;
 		if (option == 2) {
 			int sourceversion = projectObj->currentversion();
-			//std::cout << sourceversion;
 
 			int destversion;
 			std::cout << "\nENTER THE VERSION YOU NEED TO REVERT BACK TO\n";
 			std::cin >> destversion;
 
-			//std::cout << "old\n" << projectObj->DebugString();
+			loadDiff(projectObj->versions(destversion), projectObj->versions(sourceversion));
+
 
 			int times = sourceversion - destversion;
 			while (times > 0) {
-				//std::cout << projectObj->versions(projectObj->versions_size() - 1).versionid() << std::endl;
 				(projectObj->mutable_versions())->RemoveLast();
 				times--;
 				projectObj->set_currentversion(projectObj->currentversion() - 1);
-				//std::cout << "   ejected";
 			}
 			versionObj = projectObj->mutable_versions(projectObj->currentversion());
-			//std::cout << "current v " << versionObj->versionid();
-
-			//std::cout << "new\n" << projectObj->DebugString();
 
 		}
 	}
