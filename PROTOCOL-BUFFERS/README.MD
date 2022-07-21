@@ -3,4 +3,4 @@
 ✅ Fixed bugs <br>
 ✅ Upload pb.cc and pb.h files <br>
 ✅ Move LOGINPAGE into a separate file <br>
-- [ ] Roll out a new feature <br>
+✅ Roll out a new feature <br>
