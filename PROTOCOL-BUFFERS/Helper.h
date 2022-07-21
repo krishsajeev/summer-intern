@@ -7,18 +7,6 @@
 #include <string>
 #include "Workspace.pb.h"
 
-class UUID {
-private:
-	std::string seed = "";
-public:
-	UUID(std::string seed) {
-		this->seed = seed;
-	}
-	std::string genID() {
-		seed = sha256((seed + seed));
-		return seed;
-	}
-};
 
 class Authenticator {
 private:
@@ -30,7 +18,7 @@ private:
 		return regex_match(email, pattern);
 	}
 public:
-	bool login(UUID* uuid,USERS::User* user) {
+	bool login(USERS::User* user) {
 
 		int option = -1;
 		auto authMapObj = USERS::Users::default_instance();
@@ -43,33 +31,25 @@ public:
 		auto authMap = authMapObj.mutable_users();
 
 		std::cout << "WELCOME TO GIT NOTE\n\n1 --- LOGIN\n2 --- SIGNUP\n3 --- DISPLAY USERS\n";
-		uuid = nullptr;
+
 
 		while (1) {
 			std::cout << "\nENTER THE OPTION\n";
 			std::cin >> option;
 
 			if (option == 1) {
-				std::string email;
+				std::string  email = "krish@gmail.com";
 				std::cout << "\nENTER EMAIL\n";
-				std::cin >> email;
+				//std::cin >> email;
 
-				std::string password; // = password
+				std::string password = "password"; // = password
 				std::cout << "\nENTER PASSWORD\n";
-				std::cin >> password;
+				//std::cin >> password;
 				password = sha256(password);
 
 				if (authMap->find(email) != authMap->end() && (*authMap)[email].passwd() == password) {
 					std::cout << "\n---- LOGGED IN SUCCESFULLY ----\n";
 					*user = (*authMap)[email];
-
-					UUID temp(user->email());
-					uuid = &temp;
-					std::string str = (uuid->genID());
-
-					std::cout << "\nCURRENT USER IS\n" << str << std::endl;
-
-					user->set_userid((str));
 
 					break;
 				}
@@ -107,9 +87,6 @@ public:
 				std::cin >> location;
 				user->set_location(location);
 
-				UUID temp(email);
-				uuid = &temp;
-				user->set_userid(uuid->genID());
 
 				(*authMap)[email] = *user;
 
