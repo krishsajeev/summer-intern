@@ -1,131 +1,117 @@
-#include<iostream>
-#include<map>
+import Foundation
+protocol Connection {
+    var amount: Float {get set}
+    func setAmount(amount: Float)
+}
 
-class Landline
-{
-public:
-    std::string STDCode;
-    std::string number;
-    float amount;
-    Landline(std::string number, std::string STDCode)
-    {
-        amount = 0;
-        this->STDCode = STDCode;
-        this->number = number;
+class Landline: Connection {
+    public var STDCode: String
+    public var number: String
+    public var amount: Float
+    
+    init (number: String, STDCode: String) {
+        amount = 0.0
+        self.STDCode = STDCode
+        self.number = number
     }
-    void setAmount(float amount)
-    {
-        this->amount = amount;
+    func setAmount(amount: Float) {
+        self.amount = amount
     }
-};
+}
 
-class Mobile
-{
-public:
-    std::string number;
-    float amount;
-    Mobile(std::string number)
-    {
-        amount = 0;
-        this->number = number;
+class Mobile: Connection {
+    public var number: String
+    public var amount: Float
+    
+    init (number: String) {
+        amount = 0.0
+        self.number = number
     }
-    void setAmount(float amount)
-    {
-        this->amount = amount;
+    func setAmount(amount: Float) {
+        self.amount = amount
     }
-};
+}
 
-template <typename T>
-class BillPayment{
-    public:
-        std::map<std::string, T*> connections;
-        void addConnection(std::string number)
-        {
-            Mobile m(number);
-            connections[number] = &m;
-            std::cout << "NEW CONNECTION CREATED\n" << number;
+class BillPayment<T> {
+    public var records = [String : T] ()
+    
+    public func addConnection(connection: T, number: String) {
+        records[number] = connection
+    }
+    
+    public func addConnection(connection: T, STDCode: String, number: String) {
+        records[STDCode + number] = connection
+    }
+    
+    public func payBill(number:String) {
+        if let obj = records[number] as? Connection{
+            obj.setAmount(amount: 0)
+            print("BILL PAID FOR CONNECTION NUMBER", number)
         }
-        void addConnection(std::string STDCode, std::string number)
-        {
-            Landline l(STDCode, number);
-            connections[STDCode + number] = &l;
-            std::cout << "NEW CONNECTION CREATED\n" << number;
+    }
+    
+    public func updateBill(number: String, amount: Float) {
+        if let obj = records[number] as? Connection{
+            obj.setAmount(amount: amount)
+            print("BILL GENERATED FOR CONNECTION NUMBER", number)
         }
-        void payBill(std::string number)
-        {
-            connections[number]->setAmount(0);
-            std::cout << "BILL PAID FOR NUMBER\n" << number;
+    }
+    
+    public func displayConnections() {
+        for num in records.keys {
+            let val = records[num] as? Connection
+            print(num, " --- ", val!.amount)
         }
-        void updateBill(std::string number, int amount)
-        {
-            connections[number]->setAmount(amount);
-            std::cout << "BILL UPDATED FOR NUMBER " << number << "AMOUNT " << amount;
+    }
+}
+
+var mobilePayment = BillPayment<Mobile> ()
+var LandlinePayment = BillPayment<Landline> ()
+
+
+while(true) {
+    print("ENTER YOUR MODE \n 1 --- MOBILE \n 2 --- LANDLINE \n")
+    let mode = readLine()
+    
+    print("ENTER YOUR OPTION\n 1 --- CREATE CONNECTION\n 2 --- PAY BILL\n 3 --- UPDATE BILL\n\n")
+    let option = readLine()
+    
+    print("ENTER THE NUMBER\n")
+    let number = readLine()
+    
+    if mode == "1" {
+        switch(option){
+        case "1":
+            mobilePayment.addConnection(connection: Mobile(number: number!), number: number!)
+            break
+        case "2":
+            mobilePayment.payBill(number: number!)
+            break
+        case "3":
+            print("ENTER THE AMOUNT\n")
+            let amount = Float(readLine()!)!
+            mobilePayment.updateBill(number: number!, amount: amount)
+        default:
+            mobilePayment.displayConnections()
         }
-};
-
-int main()
-{
-    BillPayment<Mobile> mobilePayment;
-    BillPayment<Landline> landlinePayment;
-
-    while(1){
-        int mode;
-        std::cout << "ENTER YOUR MODE \n 1 --- MOBILE \n 2 --- LANDLINE \n";
-        std::cin >> mode;            
-
-        int option;
-        std::cout << "ENTER YOUR OPTION\n 1 --- CREATE CONNECTION\n 2 --- PAY BILL\n 3 --- UPDATE BILL\n\n";
-        std::cin >> option;
-
-        std::string num;
-        std::cout << "ENTER THE NUMBER\n";
-        std::cin >> num;
-
-        if(mode == 1){
-            switch (option)
-            {
-            case 1:
-                mobilePayment.addConnection(num);
-                break;
-            case 2:
-            {
-                mobilePayment.payBill(num);
-                break;
-            }
-            case 3:
-            {
-                int amount;
-                std::cout << "ENTER THE AMOUNT\n";
-                std::cin >> amount;
-                mobilePayment.updateBill(num, amount);
-                break;
-            }
-            }
-        }
-        else{
-            std::string code;
-            std::cout << "ENTER THE STD CODE\n";
-            std::cin >> code;
-
-            switch (option)
-            {
-            case 1:
-                landlinePayment.addConnection(num, code);
-                break;
-            case 2:
-            {
-                landlinePayment.payBill(num);
-                break;
-            }
-            case 3:
-            {
-                int amount;
-                std::cout << "ENTER THE AMOUNT\n";
-                std::cin >> amount;
-                landlinePayment.updateBill(num, amount);
-                break;
-            }
-            }
+    }
+    else {
+        print("ENTER THE STD CODE\n")
+        let code = readLine()
+        
+        switch(option){
+        case "1":
+            LandlinePayment.addConnection(connection: Landline(number: number!, STDCode: code!), number: number!)
+            break
+        case "2":
+            LandlinePayment.payBill(number: number!)
+            break
+        case "3":
+            print("ENTER THE AMOUNT\n")
+            let amount = Float(readLine()!)!
+            LandlinePayment.updateBill(number: number!, amount: amount)
+        default:
+            LandlinePayment.displayConnections()
         }
     }
 }
